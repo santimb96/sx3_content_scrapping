@@ -1,6 +1,8 @@
+from msilib.schema import Directory
 import os
 import requests
 import json
+import platform
 from colorama import Fore
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
@@ -66,12 +68,17 @@ def app():
             return quit()
         return
 
+    def check_os_and_return_path():
+        if platform.system() == "Windows":
+            return os.path.join("E:/" if check_drive_exist("e") else "C:/", f"videos/{get_folder_name(URL_BASE)}")
+
+        return os.path.join("~/Videos", {get_folder_name(URL_BASE)})        
+
     def check_drive_exist(drive):
         return os.path.exists(drive + ":\\")
 
     def download_videos(videos):
-        directory = "E:/" if check_drive_exist("e") else "C:/"
-        path = os.path.join(directory, f"videos/{get_folder_name(URL_BASE)}")
+        path = check_os_and_return_path()
 
         if not os.path.exists(path):
             os.makedirs(path)
@@ -100,7 +107,7 @@ def app():
                 except:
                     raise Exception("Something went wrong with the download!")
 
-        return print("¡All files downloaded!")
+        return print("Are you up to date!")
 
     check_status_code(page_response.status_code)
     html_page = page_parser(page_response.content)
