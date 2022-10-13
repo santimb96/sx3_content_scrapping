@@ -4,6 +4,7 @@ import json
 from colorama import Fore
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
+from clint.textui import progress
 
 
 def app():
@@ -35,6 +36,8 @@ def app():
         return page.find_all("li", class_="C-llistatVideo")
 
     def get_media_links(list_of_chapters):
+        # los vídeos se cuelgan de más a menos reciente, por lo que no están ordenados cronológicamente y hay que hacer un reverse() 
+        list_of_chapters.reverse()
         for chapter in list_of_chapters:
             link = chapter.findAll("a")
             video_id.append(link[0]["href"].split("/")[7])
@@ -78,17 +81,24 @@ def app():
             file_path = os.path.join(path, file_name)
 
             if not os.path.exists(file_path):
+                try:
+                    req = requests.get(video["url"], stream=True)
 
-                req = requests.get(video["url"], stream=True)
-                print(f"{Fore.BLUE}The file doesn't exist in your folder!")
-                print(Fore.GREEN + "Downloading " + video["title"])
+                    print(f"{Fore.BLUE}The file doesn't exist in your folder!")
+                    print(Fore.GREEN + "Downloading " + video["title"])
 
-                with open(file_path, "wb") as f:
-                    for chunk in req.iter_content(chunk_size=1024 * 1024):
-                        if chunk:
-                            f.write(chunk)
+                    with open(file_path, "wb") as f:
+                        total_size = int(req.headers.get("Content-Length"))
 
-                print("File downloaded!")
+                        for chunk in progress.bar(req.iter_content(chunk_size=1024 * 1024), expected_size=(total_size/1024)+1):
+
+                            if chunk:
+                                f.write(chunk)
+                                f.flush()
+
+                    print("File downloaded!")
+                except:
+                    raise Exception("Something went wrong with the download!")
 
         return print("¡All files downloaded!")
 
