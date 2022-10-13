@@ -90,7 +90,7 @@ def app():
                     with open(file_path, "wb") as f:
                         total_size = int(req.headers.get("Content-Length"))
 
-                        for chunk in progress.bar(req.iter_content(chunk_size=1024 * 1024), expected_size=(total_size/1024)+1):
+                        for chunk in progress.bar(req.iter_content(chunk_size=1024), expected_size=(total_size/1024)+1):
 
                             if chunk:
                                 f.write(chunk)
