@@ -1,3 +1,5 @@
 /.env
 /sx3_content_scrapping
+/build
+/dist
 .env

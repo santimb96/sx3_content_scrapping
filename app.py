@@ -14,7 +14,7 @@ def app():
 
     URL_BASE = os.getenv("URL_BASE")
     API_URL = os.getenv("API_URL")
-    page_response = requests.get(URL_BASE)
+    page_response = ""
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
     }
@@ -24,11 +24,8 @@ def app():
     videos = []
 
     def check_status_code(status_code):
-        if status_code == 200:
-            return
-        else:
-            print(f"{Fore.RED}{status_code}: forbidden access")
-            return quit()
+        print('try')
+        return status_code == 200
 
     def page_parser(page):
         return BeautifulSoup(page, "html.parser")
@@ -114,7 +111,11 @@ def app():
 
         return print("Are you up to date!")
 
-    check_status_code(page_response.status_code)
+    while True:
+        res = requests.get(URL_BASE)
+        if check_status_code(res.status_code):
+            page_response = res
+            break
     html_page = page_parser(page_response.content)
     chapters_list = get_chapter_url(html_page)
     get_media_links(chapters_list)
@@ -122,4 +123,5 @@ def app():
     download_videos(videos)
 
 
-app()
+if __name__ == "__main__":
+   app()
