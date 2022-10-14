@@ -6,6 +6,7 @@ from colorama import Fore
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from clint.textui import progress
+from time import sleep
 
 
 def app():
@@ -23,8 +24,12 @@ def app():
     video_id = []
     videos = []
 
+    attempts = 30
+
     def check_status_code(status_code):
-        print('try')
+        nonlocal attempts
+        attempts -= 1
+        print(f"{Fore.CYAN}{str(attempts)}s", end='\r')
         return status_code == 200
 
     def page_parser(page):
@@ -116,6 +121,11 @@ def app():
         if check_status_code(res.status_code):
             page_response = res
             break
+        if attempts == 0:
+            print(f"{Fore.RED} Timeout! Try again later!")
+            return quit()
+        sleep(1)
+
     html_page = page_parser(page_response.content)
     chapters_list = get_chapter_url(html_page)
     get_media_links(chapters_list)
