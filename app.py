@@ -1,4 +1,3 @@
-from msilib.schema import Directory
 import os
 import requests
 import json
@@ -38,7 +37,7 @@ def app():
         return page.find_all("li", class_="C-llistatVideo")
 
     def get_media_links(list_of_chapters):
-        # los vídeos se cuelgan de más a menos reciente, por lo que no están ordenados cronológicamente y hay que hacer un reverse() 
+        # los vídeos se cuelgan de más a menos reciente, por lo que no están ordenados cronológicamente y hay que hacer un reverse()
         list_of_chapters.reverse()
         for chapter in list_of_chapters:
             link = chapter.findAll("a")
@@ -70,9 +69,12 @@ def app():
 
     def check_os_and_return_path():
         if platform.system() == "Windows":
-            return os.path.join("E:/" if check_drive_exist("e") else "C:/", f"videos/{get_folder_name(URL_BASE)}")
+            return os.path.join(
+                "E:/" if check_drive_exist("e") else "C:/",
+                f"videos/{get_folder_name(URL_BASE)}",
+            )
 
-        return os.path.join("~/Videos", {get_folder_name(URL_BASE)})        
+        return os.path.join("~/Videos", {get_folder_name(URL_BASE)})
 
     def check_drive_exist(drive):
         return os.path.exists(drive + ":\\")
@@ -97,7 +99,10 @@ def app():
                     with open(file_path, "wb") as f:
                         total_size = int(req.headers.get("Content-Length"))
 
-                        for chunk in progress.bar(req.iter_content(chunk_size=1024), expected_size=(total_size/1024)+1):
+                        for chunk in progress.bar(
+                            req.iter_content(chunk_size=1024),
+                            expected_size=(total_size / 1024) + 1,
+                        ):
 
                             if chunk:
                                 f.write(chunk)
