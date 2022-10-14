@@ -74,7 +74,7 @@ def app():
                 f"videos/{get_folder_name(URL_BASE)}",
             )
 
-        return os.path.join("~/Videos", {get_folder_name(URL_BASE)})
+        return os.path.join("~/Videos", str({get_folder_name(URL_BASE)}))
 
     def check_drive_exist(drive):
         return os.path.exists(drive + ":\\")
