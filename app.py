@@ -10,7 +10,7 @@ from time import sleep
 
 
 def app():
-
+    """Function where we placed all functions and variables"""
     load_dotenv()
 
     URL_BASE = os.getenv("URL_BASE")
@@ -21,35 +21,84 @@ def app():
     }
     html_page = ""
     chapters_list = ""
+    path = ""
     video_id = []
     videos = []
 
     attempts = 30
 
     def check_status_code(status_code):
+        """Checks if the status code is 200 (ok)
+
+        Args:
+            status_code (integer): _description_
+
+        Returns:
+            bool: return True if code is equal to 200, if not, False
+        """
         nonlocal attempts
         attempts -= 1
-        print(f"{Fore.CYAN}{str(attempts)}s", end='\r')
+        print(f"{Fore.CYAN}{str(attempts)}", end="\r")
         return status_code == 200
 
     def page_parser(page):
+        """Receives a page to be parsed
+
+        Args:
+            page (Any): response from the request page
+
+        Returns:
+            BeautifulSoup: parsed page
+        """
         return BeautifulSoup(page, "html.parser")
 
     def get_chapter_url(page):
+        """Get the list of chapters from the tv serie
+
+        Args:
+            page (BeautifulSoup): parsed page
+
+        Returns:
+            List: list of chapters (li elements with links to chapters)
+        """
         return page.find_all("li", class_="C-llistatVideo")
 
-    def get_media_links(list_of_chapters):
+    def get_media_links(chapter_list):
+        """We obtain the video id from every link in chapter_list
+
+        Args:
+            chapter_list (List): chapter list
+        """
         # los vídeos se cuelgan de más a menos reciente, por lo que no están ordenados cronológicamente y hay que hacer un reverse()
-        list_of_chapters.reverse()
-        for chapter in list_of_chapters:
+        chapter_list.reverse()
+        for chapter in chapter_list:
             link = chapter.findAll("a")
             video_id.append(link[0]["href"].split("/")[7])
         return
 
     def get_folder_name(url):
+        """Get folder name from tv serie title
+
+        Args:
+            url (string): tv serie url
+
+        Returns:
+            string: folder name
+        """
         return url.split("/")[5]
 
     def get_data_from_link(ids=[]):
+        """Get chapter data from every video id code
+
+        Args:
+            ids (list, optional): video id list. Defaults to [].
+
+        Raises:
+            Exception: return error if we can not get the video data
+
+        Returns:
+            NoReturn: quit from the program
+        """
 
         if len(ids):
             for id in ids:
@@ -65,24 +114,44 @@ def app():
                 except:
                     raise Exception("¡Something went wrong!")
         else:
-            print("¡The video's id list is empty!")
+            print(f"{Fore.RED}¡The video's id list is empty!")
             return quit()
         return
 
-    def check_os_and_return_path():
+    def check_os_and_return_path(folder_name, windows_base_path, linux_base_path):
+        """Check if the OS is Windows or Linux and the returns a path
+
+        Returns:
+            string: return path
+        """
         if platform.system() == "Windows":
             return os.path.join(
-                "E:/" if check_drive_exist("e") else "C:/",
-                f"videos/{get_folder_name(URL_BASE)}",
+                windows_base_path,
+                f"videos/{folder_name}",
             )
 
-        return os.path.join("~/Videos", str({get_folder_name(URL_BASE)}))
+        return os.path.join(linux_base_path, str({folder_name}))
 
     def check_drive_exist(drive):
+        """Check if disk exists in our system
+
+        Args:
+            drive (string): drive letter
+
+        Returns:
+            bool: return True or False if the disk exists or not
+        """
         return os.path.exists(drive + ":\\")
 
-    def download_videos(videos):
-        path = check_os_and_return_path()
+    def download_videos(path, videos):
+        """From the the videos list, the program download every chapter
+
+        Args:
+            videos (list): list of videos in JSON format
+
+        Raises:
+            Exception: return error if any problem appears
+        """
 
         if not os.path.exists(path):
             os.makedirs(path)
@@ -128,10 +197,12 @@ def app():
 
     html_page = page_parser(page_response.content)
     chapters_list = get_chapter_url(html_page)
+    path = check_os_and_return_path(get_folder_name(URL_BASE), "E:/" if check_drive_exist("e") else "C:/", f"{os.path.expanduser('~')}/Videos")
+
     get_media_links(chapters_list)
     get_data_from_link(video_id)
-    download_videos(videos)
+    download_videos(path, videos)
 
 
 if __name__ == "__main__":
-   app()
+    app()
