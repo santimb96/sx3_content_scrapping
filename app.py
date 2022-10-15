@@ -38,7 +38,7 @@ def app():
         """
         nonlocal attempts
         attempts -= 1
-        print(f"{Fore.CYAN}{str(attempts)}", end="\r")
+        print(f"{Fore.CYAN}---> Trying...{str(attempts)}", end="\r")
         return status_code == 200
 
     def page_parser(page):
