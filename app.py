@@ -197,7 +197,7 @@ def app():
 
     html_page = page_parser(page_response.content)
     chapters_list = get_chapter_url(html_page)
-    path = check_os_and_return_path(get_folder_name(URL_BASE), "E:/" if check_drive_exist("e") else "C:/", f"{os.path.expanduser('~')}/Videos")
+    path = check_os_and_return_path(get_folder_name(URL_BASE), "E:/" if check_drive_exist("e") else f"{os.path.expanduser('~')}/Videos", f"{os.path.expanduser('~')}/Videos")
 
     get_media_links(chapters_list)
     get_data_from_link(video_id)
