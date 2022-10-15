@@ -1,3 +1,6 @@
 /.env
 /sx3_content_scrapping
+/build
+/dist
+/__pycache__
 .env
