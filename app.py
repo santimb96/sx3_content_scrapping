@@ -1,3 +1,4 @@
+import sys
 import os
 import requests
 import json
@@ -10,19 +11,21 @@ from time import sleep
 
 """Function where we placed all functions and variables"""
 load_dotenv()
-URL_BASE = os.getenv("URL_BASE")
-API_URL = os.getenv("API_URL")
-page_response = ""
-headers = {
+BASE_URL: str = os.getenv("BASE_URL")
+API_URL: str = os.getenv("API_URL")
+LIMIT: int = 50
+LINE_CLEAR: str = "\x1b[2K"
+LINE_UP: str = "\033[1A"
+page_response: str = ""
+headers: dict = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
 }
-html_page = ""
-chapters_list = ""
-path = ""
-video_id = []
-videos = []
-attempts = 0
-LIMIT = 50
+html_page: str = ""
+chapters_list: str = ""
+path: str = ""
+video_id: list = []
+videos: list = []
+attempts: int = 0
 
 
 def check_status_code(status_code):
@@ -39,6 +42,22 @@ def check_status_code(status_code):
         end="\r",
     )
     return status_code == 200
+
+
+def get_page_data():
+    while True:
+        res: object = requests.get(BASE_URL)
+        if check_status_code(res.status_code):
+            global page_response
+            page_response = res
+            print("\n")
+            break
+        if attempts == LIMIT:
+            print(
+                f"{Fore.RED} Timeout! It has been impossible to access the web data. Try later!"
+            )
+            return quit()
+        sleep(2)
 
 
 def page_parser(page):
@@ -69,7 +88,7 @@ def get_media_links(chapter_list):
     # los vídeos se cuelgan de más a menos reciente, por lo que no están ordenados cronológicamente y hay que hacer un reverse()
     chapter_list.reverse()
     for chapter in chapter_list:
-        link = chapter.findAll("a")
+        link: list = chapter.findAll("a")
         video_id.append(link[0]["href"].split("/")[7])
     return
 
@@ -96,8 +115,8 @@ def get_data_from_link(ids=[]):
     if len(ids):
         for id in ids:
             try:
-                req = requests.get(f"{API_URL}{id}", headers=headers)
-                data = json.loads(req.text)
+                res: object = requests.get(f"{API_URL}{id}", headers=headers)
+                data: object = json.loads(res.text)
                 videos.append(
                     {
                         "title": data["informacio"]["titol"],
@@ -145,18 +164,18 @@ def download_videos(path, videos):
     if not os.path.exists(path):
         os.makedirs(path)
     for index, video in enumerate(videos):
-        file_name = f"{index + 1}-{video['title'].replace(':', '-')}.mp4"
-        file_path = f"{path}/{file_name}"
+        file_name: str = f"{index + 1}-{video['title'].replace(':', '-')}.mp4"
+        file_path: str = f"{path}/{file_name}"
         if not os.path.exists(file_path):
             try:
-                req = requests.get(video["url"], stream=True)
+                res: object = requests.get(video["url"], stream=True)
                 print(f"{Fore.BLUE}The file doesn't exist in your folder!")
                 print(f"{Fore.GREEN}Downloading ---> {video['title']}")
 
                 with open(file_path, "wb") as f:
-                    total_size = int(req.headers.get("Content-Length"))
+                    total_size = int(res.headers.get("Content-Length"))
                     for chunk in progress.bar(
-                        req.iter_content(chunk_size=1024),
+                        res.iter_content(chunk_size=1024),
                         expected_size=(total_size / 1024) + 1,
                     ):
                         if chunk:
@@ -169,22 +188,11 @@ def download_videos(path, videos):
 
 
 def main():
-    while True:
-        res = requests.get(URL_BASE)
-        if check_status_code(res.status_code):
-            page_response = res
-            break
-        if attempts == LIMIT:
-            print(
-                f"{Fore.RED} Timeout! It has been impossible to access the web data. Try later!"
-            )
-            return quit()
-        sleep(2)
-
+    get_page_data()
     html_page = page_parser(page_response.content)
     chapters_list = get_chapter_url(html_page)
     path = check_os_and_return_path(
-        get_folder_name(URL_BASE),
+        get_folder_name(BASE_URL),
         "E:/" if check_drive_exist("e") else f"{os.path.expanduser('~')}/Videos",
         f"{os.path.expanduser('~')}/Videos",
     )

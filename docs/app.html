@@ -22,6 +22,7 @@
 </td><td width="25%" valign=top><a href="platform.html">platform</a><br>
 <a href="clint.textui.progress.html">clint.textui.progress</a><br>
 </td><td width="25%" valign=top><a href="requests.html">requests</a><br>
+<a href="sys.html">sys</a><br>
 </td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#eeaa77">
@@ -29,7 +30,51 @@
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-app"><strong>app</strong></a>()</dt><dd><tt>Function&nbsp;where&nbsp;we&nbsp;placed&nbsp;all&nbsp;functions&nbsp;and&nbsp;variables</tt></dd></dl>
+<td width="100%"><dl><dt><a name="-check_drive_exist"><strong>check_drive_exist</strong></a>(drive)</dt><dd><tt>Check&nbsp;if&nbsp;disk&nbsp;exists&nbsp;in&nbsp;our&nbsp;system<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;drive&nbsp;(string):&nbsp;drive&nbsp;letter<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bool:&nbsp;return&nbsp;True&nbsp;or&nbsp;False&nbsp;if&nbsp;the&nbsp;disk&nbsp;exists&nbsp;or&nbsp;not</tt></dd></dl>
+ <dl><dt><a name="-check_os_and_return_path"><strong>check_os_and_return_path</strong></a>(folder_name, windows_base_path, linux_base_path)</dt><dd><tt>Check&nbsp;if&nbsp;the&nbsp;OS&nbsp;is&nbsp;Windows&nbsp;or&nbsp;Linux&nbsp;and&nbsp;the&nbsp;returns&nbsp;a&nbsp;path<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;string:&nbsp;return&nbsp;path</tt></dd></dl>
+ <dl><dt><a name="-check_status_code"><strong>check_status_code</strong></a>(status_code)</dt><dd><tt>Checks&nbsp;if&nbsp;the&nbsp;status&nbsp;code&nbsp;is&nbsp;200&nbsp;(ok)<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;status_code&nbsp;(integer):&nbsp;_description_<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bool:&nbsp;return&nbsp;True&nbsp;if&nbsp;code&nbsp;is&nbsp;equal&nbsp;to&nbsp;200,&nbsp;if&nbsp;not,&nbsp;False</tt></dd></dl>
+ <dl><dt><a name="-download_videos"><strong>download_videos</strong></a>(path, videos)</dt><dd><tt>From&nbsp;the&nbsp;the&nbsp;videos&nbsp;list,&nbsp;the&nbsp;program&nbsp;download&nbsp;every&nbsp;chapter<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;videos&nbsp;(list):&nbsp;list&nbsp;of&nbsp;videos&nbsp;in&nbsp;JSON&nbsp;format<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Exception:&nbsp;return&nbsp;error&nbsp;if&nbsp;any&nbsp;problem&nbsp;appears</tt></dd></dl>
+ <dl><dt><a name="-get_chapter_url"><strong>get_chapter_url</strong></a>(page)</dt><dd><tt>Get&nbsp;the&nbsp;list&nbsp;of&nbsp;chapters&nbsp;from&nbsp;the&nbsp;tv&nbsp;serie<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;page&nbsp;(BeautifulSoup):&nbsp;parsed&nbsp;page<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;List:&nbsp;list&nbsp;of&nbsp;chapters&nbsp;(li&nbsp;elements&nbsp;with&nbsp;links&nbsp;to&nbsp;chapters)</tt></dd></dl>
+ <dl><dt><a name="-get_data_from_link"><strong>get_data_from_link</strong></a>(ids=[])</dt><dd><tt>Get&nbsp;chapter&nbsp;data&nbsp;from&nbsp;every&nbsp;video&nbsp;id&nbsp;code<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ids&nbsp;(list,&nbsp;optional):&nbsp;video&nbsp;id&nbsp;list.&nbsp;Defaults&nbsp;to&nbsp;[].<br>
+Raises:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Exception:&nbsp;return&nbsp;error&nbsp;if&nbsp;we&nbsp;can&nbsp;not&nbsp;get&nbsp;the&nbsp;video&nbsp;data<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;NoReturn:&nbsp;quit&nbsp;from&nbsp;the&nbsp;program</tt></dd></dl>
+ <dl><dt><a name="-get_folder_name"><strong>get_folder_name</strong></a>(url)</dt><dd><tt>Get&nbsp;folder&nbsp;name&nbsp;from&nbsp;tv&nbsp;serie&nbsp;title<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;url&nbsp;(string):&nbsp;tv&nbsp;serie&nbsp;url<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;string:&nbsp;folder&nbsp;name</tt></dd></dl>
+ <dl><dt><a name="-get_media_links"><strong>get_media_links</strong></a>(chapter_list)</dt><dd><tt>We&nbsp;obtain&nbsp;the&nbsp;video&nbsp;id&nbsp;from&nbsp;every&nbsp;link&nbsp;in&nbsp;chapter_list<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;chapter_list&nbsp;(List):&nbsp;chapter&nbsp;list</tt></dd></dl>
+ <dl><dt><a name="-get_page_data"><strong>get_page_data</strong></a>()</dt></dl>
+ <dl><dt><a name="-main"><strong>main</strong></a>()</dt></dl>
+ <dl><dt><a name="-page_parser"><strong>page_parser</strong></a>(page)</dt><dd><tt>Receives&nbsp;a&nbsp;page&nbsp;to&nbsp;be&nbsp;parsed<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;page&nbsp;(Any):&nbsp;response&nbsp;from&nbsp;the&nbsp;request&nbsp;page<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;BeautifulSoup:&nbsp;parsed&nbsp;page</tt></dd></dl>
  <dl><dt><a name="-sleep"><strong>sleep</strong></a>(...)</dt><dd><tt><a href="#-sleep">sleep</a>(seconds)<br>
 &nbsp;<br>
 Delay&nbsp;execution&nbsp;for&nbsp;a&nbsp;given&nbsp;number&nbsp;of&nbsp;seconds.&nbsp;&nbsp;The&nbsp;argument&nbsp;may&nbsp;be<br>
@@ -41,5 +86,19 @@ a&nbsp;floating&nbsp;point&nbsp;number&nbsp;for&nbsp;subsecond&nbsp;precision.</
 <font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>Fore</strong> = &lt;colorama.ansi.AnsiFore object&gt;</td></tr></table>
+<td width="100%"><strong>API_URL</strong> = 'https://api-media.ccma.cat/pvideo/media.jsp?media=video&amp;versio=vast&amp;idint='<br>
+<strong>BASE_URL</strong> = 'https://www.ccma.cat/tv3/sx3/yu-yu-hakusho-defensors-mes-enlla/'<br>
+<strong>Fore</strong> = &lt;colorama.ansi.AnsiFore object&gt;<br>
+<strong>LIMIT</strong> = 50<br>
+<strong>LINE_CLEAR</strong> = '<font color="#c040c0">\x1b</font>[2K'<br>
+<strong>LINE_UP</strong> = '<font color="#c040c0">\x1b</font>[1A'<br>
+<strong>__annotations__</strong> = {'API_URL': &lt;class 'str'&gt;, 'BASE_URL': &lt;class 'str'&gt;, 'LIMIT': &lt;class 'int'&gt;, 'LINE_CLEAR': &lt;class 'str'&gt;, 'LINE_UP': &lt;class 'str'&gt;, 'attempts': &lt;class 'int'&gt;, 'chapters_list': &lt;class 'str'&gt;, 'headers': &lt;class 'dict'&gt;, 'html_page': &lt;class 'str'&gt;, 'page_response': &lt;class 'str'&gt;, ...}<br>
+<strong>attempts</strong> = 0<br>
+<strong>chapters_list</strong> = ''<br>
+<strong>headers</strong> = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) ...L, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}<br>
+<strong>html_page</strong> = ''<br>
+<strong>page_response</strong> = ''<br>
+<strong>path</strong> = ''<br>
+<strong>video_id</strong> = []<br>
+<strong>videos</strong> = []</td></tr></table>
 </body></html>
