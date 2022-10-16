@@ -1,4 +1,3 @@
-import sys
 import os
 import requests
 import json
@@ -14,8 +13,6 @@ load_dotenv()
 BASE_URL: str = os.getenv("BASE_URL")
 API_URL: str = os.getenv("API_URL")
 LIMIT: int = 50
-LINE_CLEAR: str = "\x1b[2K"
-LINE_UP: str = "\033[1A"
 page_response: str = ""
 headers: dict = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
