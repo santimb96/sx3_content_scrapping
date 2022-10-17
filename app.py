@@ -7,10 +7,11 @@ from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from clint.textui import progress
 from time import sleep
+from pytimedinput import timedInput
 
 """Function where we placed all functions and variables"""
 load_dotenv()
-BASE_URL: str = os.getenv("BASE_URL")
+base_url: str = os.getenv("BASE_URL")
 API_URL: str = os.getenv("API_URL")
 LIMIT: int = 50
 page_response: str = ""
@@ -24,6 +25,20 @@ video_id: list = []
 videos: list = []
 attempts: int = 0
 
+
+def input_base_url():
+    global base_url
+    userText, timedOut = timedInput(f"Enter the URL of the TV series if you don't want the default one (you have 10 seconds): ", timeout=10)
+    if timedOut:
+        print(f"{Fore.CYAN} No URL entered. We will continue with the default...")
+        return
+    elif userText != "":    
+        base_url = userText
+        print(f"{Fore.CYAN} The new url has been entered successfully!")
+        return
+    else:
+        print(f"{Fore.RED} The URL is not valid! Enter a valid URL later!")
+        return quit()    
 
 def check_status_code(status_code):
     """Checks if the status code is 200 (ok)
@@ -43,7 +58,7 @@ def check_status_code(status_code):
 
 def get_page_data():
     while True:
-        res: object = requests.get(BASE_URL)
+        res: object = requests.get(base_url)
         if check_status_code(res.status_code):
             global page_response
             page_response = res
@@ -82,7 +97,7 @@ def get_media_links(chapter_list):
     Args:
         chapter_list (List): chapter list
     """
-    # los vídeos se cuelgan de más a menos reciente, por lo que no están ordenados cronológicamente y hay que hacer un reverse()
+    # we use reverse() method because the last video is the first and the order is not correct 
     chapter_list.reverse()
     for chapter in chapter_list:
         link: list = chapter.findAll("a")
@@ -185,11 +200,12 @@ def download_videos(path, videos):
 
 
 def main():
+    input_base_url()
     get_page_data()
     html_page = page_parser(page_response.content)
     chapters_list = get_chapter_url(html_page)
     path = check_os_and_return_path(
-        get_folder_name(BASE_URL),
+        get_folder_name(base_url),
         "E:/" if check_drive_exist("e") else f"{os.path.expanduser('~')}/Videos",
         f"{os.path.expanduser('~')}/Videos",
     )
