@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from clint.textui import progress
 from time import sleep
-from pytimedinput import timedInput
+# from pytimedinput import timedInput
 
 """Function where we placed all functions and variables"""
 load_dotenv()
@@ -24,21 +24,22 @@ path: str = ""
 video_id: list = []
 videos: list = []
 attempts: int = 0
+chapter_id: int = 0
 
+# def input_base_url():
+#     global base_url
+#     userText, timedOut = timedInput(f"Enter the URL of the TV series if you don't want the default one (you have 10 seconds): ", timeout=10)
+#     if timedOut:
+#         print(f"{Fore.CYAN} No URL entered. We will continue with the default...")
+#         return
+#     elif userText != "":
+#         base_url = userText
+#         print(f"{Fore.CYAN} The new URL has been entered successfully!")
+#         return
+#     else:
+#         print(f"{Fore.RED} The URL is not valid! Enter a valid URL later!")
+#         return quit()
 
-def input_base_url():
-    global base_url
-    userText, timedOut = timedInput(f"Enter the URL of the TV series if you don't want the default one (you have 10 seconds): ", timeout=10)
-    if timedOut:
-        print(f"{Fore.CYAN} No URL entered. We will continue with the default...")
-        return
-    elif userText != "":    
-        base_url = userText
-        print(f"{Fore.CYAN} The new url has been entered successfully!")
-        return
-    else:
-        print(f"{Fore.RED} The URL is not valid! Enter a valid URL later!")
-        return quit()    
 
 def check_status_code(status_code):
     """Checks if the status code is 200 (ok)
@@ -97,7 +98,7 @@ def get_media_links(chapter_list):
     Args:
         chapter_list (List): chapter list
     """
-    # we use reverse() method because the last video is the first and the order is not correct 
+    # we use reverse() method because the last video is the first and the order is not correct
     chapter_list.reverse()
     for chapter in chapter_list:
         link: list = chapter.findAll("a")
@@ -125,21 +126,47 @@ def get_data_from_link(ids=[]):
         NoReturn: quit from the program
     """
     if len(ids):
+        #open and read the file and then parse it to json 
+        with open("db/chapters.json", encoding="utf-8") as f:
+            chapters = json.load(f)
+        
+        global chapter_id
+
+        #get the last chapter in the list by id
+        chapter_id = chapters[-1].get("id")
+
         for id in ids:
             try:
                 res: object = requests.get(f"{API_URL}{id}", headers=headers)
                 data: object = json.loads(res.text)
-                videos.append(
-                    {
-                        "title": data["informacio"]["titol"],
-                        "url": data["media"]["url"][0]["file"],
-                    }
-                )
+
+                if not list(filter(lambda chapter: chapter.get("title") == data["informacio"]["titol"], chapters)):
+                    #add the new id from the last id found (lastId: 8, newId: lastId + 1 (9); lastId: 9, newId: lastId + 1 (10))
+                    chapter_id = chapter_id + 1
+                    videos.append(
+                        {
+                            "id": chapter_id,
+                            "title": data["informacio"]["titol"],
+                            "url": data["media"]["url"][0]["file"],
+                        }
+                    )
+                    chapters.append(
+                        {
+                            "id": chapter_id,
+                            "title": data["informacio"]["titol"],
+                            "url": data["media"]["url"][0]["file"],
+                        }
+                    )
             except:
                 raise Exception("¡Something went wrong!")
     else:
         print(f"{Fore.RED}¡The video's id list is empty!")
         return quit()
+
+    #open and append the new(s) chapters to a list
+    with open("db/chapters.json", "w", encoding="utf-8") as f:
+        json.dump(chapters, f, ensure_ascii=False, indent=4)
+
     return
 
 
@@ -153,7 +180,7 @@ def check_os_and_return_path(folder_name, windows_base_path, linux_base_path):
             windows_base_path,
             f"videos/{folder_name}",
         )
-    return os.path.join(linux_base_path, str({folder_name}))
+    return os.path.join(linux_base_path, folder_name)
 
 
 def check_drive_exist(drive):
@@ -175,8 +202,8 @@ def download_videos(path, videos):
     """
     if not os.path.exists(path):
         os.makedirs(path)
-    for index, video in enumerate(videos):
-        file_name: str = f"{index + 1}-{video['title'].replace(':', '-')}.mp4"
+    for video in videos:
+        file_name: str = f"{video['id']}-{video['title'].replace(':', '-')}.mp4"
         file_path: str = f"{path}/{file_name}"
         if not os.path.exists(file_path):
             try:
@@ -200,7 +227,7 @@ def download_videos(path, videos):
 
 
 def main():
-    input_base_url()
+    # input_base_url()
     get_page_data()
     html_page = page_parser(page_response.content)
     chapters_list = get_chapter_url(html_page)
