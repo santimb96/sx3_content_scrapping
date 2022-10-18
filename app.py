@@ -180,7 +180,7 @@ def check_os_and_return_path(folder_name, windows_base_path, linux_base_path):
             windows_base_path,
             f"videos/{folder_name}",
         )
-    return os.path.join(linux_base_path, str({folder_name}))
+    return os.path.join(linux_base_path, folder_name)
 
 
 def check_drive_exist(drive):
