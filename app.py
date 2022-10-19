@@ -131,9 +131,9 @@ def get_data_from_link(ids=[]):
             chapters = json.load(f)
         
         global chapter_id
-
         #get the last chapter in the list by id
-        chapter_id = chapters[-1].get("id")
+        if len(chapters):
+            chapter_id = chapters[-1].get("id")
 
         for id in ids:
             try:
