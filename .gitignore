@@ -3,4 +3,5 @@
 /build
 /dist
 /__pycache__
+/scripts/launcher.ps1
 .env

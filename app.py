@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from clint.textui import progress
 from time import sleep
+from datetime import datetime
 # from pytimedinput import timedInput
 
 """Function where we placed all functions and variables"""
@@ -126,12 +127,12 @@ def get_data_from_link(ids=[]):
         NoReturn: quit from the program
     """
     if len(ids):
-        #open and read the file and then parse it to json 
+        # open and read the file and then parse it to json
         with open("db/chapters.json", encoding="utf-8") as f:
             chapters = json.load(f)
-        
+
         global chapter_id
-        #get the last chapter in the list by id
+        # get the last chapter in the list by id
         if len(chapters):
             chapter_id = chapters[-1].get("id")
 
@@ -140,30 +141,30 @@ def get_data_from_link(ids=[]):
                 res: object = requests.get(f"{API_URL}{id}", headers=headers)
                 data: object = json.loads(res.text)
 
-                if not list(filter(lambda chapter: chapter.get("title") == data["informacio"]["titol"], chapters)):
-                    #add the new id from the last id found (lastId: 8, newId: lastId + 1 (9); lastId: 9, newId: lastId + 1 (10))
+                if not list(
+                    filter(
+                        lambda chapter: chapter.get("title")
+                        == data["informacio"]["titol"],
+                        chapters,
+                    )
+                ):
+                    # add the new id from the last id found (lastId: 8, newId: lastId + 1 (9); lastId: 9, newId: lastId + 1 (10))
                     chapter_id = chapter_id + 1
-                    videos.append(
-                        {
-                            "id": chapter_id,
-                            "title": data["informacio"]["titol"],
-                            "url": data["media"]["url"][0]["file"],
-                        }
-                    )
-                    chapters.append(
-                        {
-                            "id": chapter_id,
-                            "title": data["informacio"]["titol"],
-                            "url": data["media"]["url"][0]["file"],
-                        }
-                    )
+                    chapter_data = {
+                        "id": chapter_id,
+                        "title": data["informacio"]["titol"],
+                        "url": data["media"]["url"][0]["file"],
+                        "date": datetime.now().strftime('%x')
+                    }
+                    videos.append(chapter_data)
+                    chapters.append(chapter_data)
             except:
                 raise Exception("¡Something went wrong!")
     else:
         print(f"{Fore.RED}¡The video's id list is empty!")
         return quit()
 
-    #open and append the new(s) chapters to a list
+    # open and append the new(s) chapters to a list
     with open("db/chapters.json", "w", encoding="utf-8") as f:
         json.dump(chapters, f, ensure_ascii=False, indent=4)
 
