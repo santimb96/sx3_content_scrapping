@@ -140,14 +140,9 @@ def get_data_from_link(ids=[]):
             try:
                 res: object = requests.get(f"{API_URL}{id}", headers=headers)
                 data: object = json.loads(res.text)
+                found: list = list(filter(lambda chapter: (chapter.get("title") in data["informacio"]["titol"]), chapters))
 
-                if not list(
-                    filter(
-                        lambda chapter: chapter.get("title")
-                        == data["informacio"]["titol"],
-                        chapters,
-                    )
-                ):
+                if not len(found):
                     # add the new id from the last id found (lastId: 8, newId: lastId + 1 (9); lastId: 9, newId: lastId + 1 (10))
                     chapter_id = chapter_id + 1
                     chapter_data = {
