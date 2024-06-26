@@ -100,7 +100,7 @@ def get_media_links(chapter_list):
         chapter_list (List): chapter list
     """
     # we use reverse() method because the last video is the first and the order is not correct
-    chapter_list.reverse()
+    chapter_list
     for chapter in chapter_list:
         link: list = chapter.findAll("a")
         video_id.append(link[0]["href"].split("/")[7])
@@ -188,6 +188,11 @@ def check_drive_exist(drive):
     """
     return os.path.exists(drive + ":\\")
 
+def sanitize_title(title):
+    title: str = title.replace(':', '-')
+    title: str = title.replace('?', 'q')
+    return title
+
 
 def download_videos(path, videos):
     """From the the videos list, the program download every chapter
@@ -199,7 +204,7 @@ def download_videos(path, videos):
     if not os.path.exists(path):
         os.makedirs(path)
     for video in videos:
-        file_name: str = f"{video['id']}-{video['title'].replace(':', '-')}.mp4"
+        file_name: str = sanitize_title(f"{video['id']}-{video['title']}.mp4")
         file_path: str = f"{path}/{file_name}"
         if not os.path.exists(file_path):
             try:
