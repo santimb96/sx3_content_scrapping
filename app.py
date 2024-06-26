@@ -190,7 +190,7 @@ def check_drive_exist(drive):
 
 def sanitize_title(title):
     title: str = title.replace(':', '-')
-    title: str = title.replace('?', 'q')
+    title: str = title.replace('?', '- question symbol')
     return title
 
 
@@ -210,7 +210,7 @@ def download_videos(path, videos):
             try:
                 res: object = requests.get(video["url"], stream=True)
                 print(f"{Fore.BLUE}The file doesn't exist in your folder!")
-                print(f"{Fore.GREEN}Downloading ---> {video['title']}")
+                print(f"{Fore.GREEN}Downloading ---> {file_name}")
 
                 with open(file_path, "wb") as f:
                     total_size = int(res.headers.get("Content-Length"))
